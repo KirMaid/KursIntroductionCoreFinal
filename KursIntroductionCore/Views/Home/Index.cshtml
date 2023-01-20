@@ -1,0 +1,82 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container">
+    <h1>ООО ИП РЖД</h1><br />
+    <h2>Список рейсов</h2>
+    @{
+        if (ViewBag.Message != null)
+        {
+            <div>
+                @ViewBag.Message
+            </div>
+        }
+        if (ViewBag.Count != null)
+        {
+            <div>
+                <p>Кол-во забронированных билетов: <span> @ViewBag.Count</span></p>
+            </div>
+        }
+    }
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Время отправления</th>
+                <th scope="col">Время прибытия</th>
+                <th scope="col">Номер поезда</th>
+                <th scope="col">Номер рейса</th>
+                <th scope="col">Место отправления</th>
+                <th scope="col">Место прибытия</th>
+                <th scope="col">Тариф</th>
+                <th scope="col">Стоимость билета</th>
+                <th scope="col">Кол-во билетов</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <form asp-action="BuyTicket" asp-controller="Home">
+                    <input type="hidden" value="@item.Id" name="Id" />
+                    <input type="hidden" value="@item.PriceModifier" name="Id" />
+                <tr>
+                    <td>
+                        @item.DatetimeFlight
+                        <input type="hidden" value=" @item.DatetimeFlight" name="DatetimeFlight" />
+                    </td>
+                    <td>
+                        @item.DatetimeFlightArrival
+                        <input type="hidden" value=" @item.DatetimeFlightArrival" name="DatetimeFlightArrival" />
+                    </td>
+                    <td>@item.Train.TrainNumber</td>
+                    <td>
+                        @item.NumberFlight
+                        <input type="hidden" value="@item.NumberFlight" name="NumberFlight" />
+                    </td>
+                    <td>
+                        @item.Departure
+                        <input type="hidden" value="@item.Departure" name="Departure" />
+                    </td>
+                    <td>
+                        @item.Arrival
+                        <input type="hidden" value="@item.Arrival" name="Arrival" />
+                    </td>
+                    <td>@item.Train.Fare.Name</td>
+                    <td>
+                        <input type="hidden" value="@item.Train.Fare.Cost" name="Cost" />
+                        @item.Train.Fare.Cost
+                    </td>
+                    <td>
+                        <input type="hidden" value="@item.CountTickets" name="CountTickets" />
+                        @item.CountTickets
+                    </td>
+                    <td>
+                        <button type="submit" class="btn btn-primary btn-lg">Купить</button>
+                    </td>
+                </tr>
+                </form>
+            }
+        </tbody>
+    </table>
+</div>
