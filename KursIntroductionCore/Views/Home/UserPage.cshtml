@@ -1,0 +1,67 @@
+﻿<div class="container">
+    <h2>Список забронированных рейсов</h2>
+    @{
+        if (ViewBag.Discount != null)
+        {
+            <div class="alert alert-info" role="alert">Ваша скидка : <span>@ViewBag.Discount</span>%</div>
+        }
+    }
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Время отправления</th>
+                <th scope="col">Время прибытия</th>
+                <th scope="col">Номер поезда</th>
+                <th scope="col">Номер рейса</th>
+                <th scope="col">Место отправления</th>
+                <th scope="col">Место прибытия</th>
+                <th scope="col">Тариф</th>
+                <th scope="col">Стоимость билета</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <form asp-action="DeleteTicket" asp-controller="UserPage">
+                <input type="hidden" value="@item.Id" name="Id" />
+                <input type="hidden" value="@item.FlightId" name="FlightId" />
+                <input type="hidden" value="@item.UserId" name="UserId" />
+<tr>
+                        <td>
+                            @item.Flight.DatetimeFlight
+                        </td>
+                        <td>
+                            @item.Flight.DatetimeFlightArrival
+                        </td>
+                        <td>@item.Flight.Train.TrainNumber</td>
+                        <td>
+                            @item.Flight.NumberFlight
+                        </td>
+                        <td>
+                            @item.Flight.Departure
+                        </td>
+                        <td>
+                            @item.Flight.Arrival
+                        </td>
+                        <td>@item.Flight.Train.Fare.Name</td>
+                        <td>
+                            @(item.Flight.Train.Fare.Cost * item.Flight.PriceModifier)
+                        </td>
+                        <td>
+                            @item.Flight.CountTickets
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-primary btn-lg">Удалить</button>
+                        </td>
+                    </tr>
+            </form>
+            }
+            </tbody>
+    </table>
+    @{
+        if (ViewBag.FinalPrice != null)
+        {
+            <div class="alert alert-info" role="alert">Сумма заказа : <span>@ViewBag.FinalPrice</span> рублей</div>
+        }
+    }
+</div>

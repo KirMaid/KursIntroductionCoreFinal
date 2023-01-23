@@ -8,13 +8,13 @@
     @{
         if (ViewBag.Message != null)
         {
-            <div>
+            <div class="alert alert-success" role="alert">
                 @ViewBag.Message
             </div>
         }
         if (ViewBag.Count != null)
         {
-            <div>
+            <div class="alert alert-info" role="alert">
                 <p>Кол-во забронированных билетов: <span> @ViewBag.Count</span></p>
             </div>
         }

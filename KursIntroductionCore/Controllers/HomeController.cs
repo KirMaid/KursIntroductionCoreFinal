@@ -1,12 +1,10 @@
 ﻿
 using KursIntroduction.Models;
 using KursIntroductionCore.Models;
+using KursIntroductionCore.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,15 +14,17 @@ namespace KursIntroductionCore.Controllers
     public class HomeController : Controller
     {
         private ApplicationContext db;
-        public HomeController(ApplicationContext context)
+        IFlightInterface flightService;
+        public HomeController(/*IFlightInterface fls*/)
         {
-            db = context;
+            db = new ApplicationContext();
+            flightService = new FlightService();
         }
-
+         
         [Authorize]
-        public async Task<IActionResult> Index()
+        public  IActionResult Index()
         {
-            if (TempData["shortMessage"]!=null)
+           if (TempData["shortMessage"] != null)
             {
                 ViewBag.Message = TempData["shortMessage"].ToString();
             }
@@ -32,25 +32,20 @@ namespace KursIntroductionCore.Controllers
             {
                 ViewBag.Count = TempData["count"].ToString();
             }
-            var flight = await db.Flights.OrderBy(n=>n.DatetimeFlight).Include(u => u.Train).ThenInclude(c => c.Fare).ToListAsync();
-            foreach (var item in flight)
-            {
-                item.Train.Fare.Cost = (int)(item.Train.Fare.Cost*item.PriceModifier);
-            }
+            var flight = flightService.GetAllFlight();
+            //var flight = await db.Flights.OrderBy(n=>n.DatetimeFlight).Include(u => u.Train).ThenInclude(c => c.Fare).ToListAsync();
             return View(flight);
         }
 
+
         [HttpPost]
-        public async Task<IActionResult> BuyTicket(Flight flt, Fare frs)
+        public  IActionResult BuyTicket(Flight flt)
         {
-            var flight = await db.Flights.FirstOrDefaultAsync(item => item.Id == flt.Id);
-            var user = await db.Users.FirstOrDefaultAsync(item => item.Login == User.Identity.Name);
-            //var price = await db.Fares.
+            var flight = db.Flights.FirstOrDefault(item => item.Id == flt.Id);
+            var user = db.Users.FirstOrDefault(item => item.Login == User.Identity.Name);
             flight.CountTickets--;
-            await db.SaveChangesAsync();
-            // добавляем пользователя в бд
-            await db.Transactions.AddAsync(new Transaction { /*Cost = (int)(frs.Cost * flt.PriceModifier), */Flight = flight,User = user });
-            await db.SaveChangesAsync();
+            db.Transactions.AddAsync(new Transaction {Flight = flight,User = user });
+            db.SaveChanges();
             TempData["shortMessage"] = "Билет успешно забронирован!";
             TempData["count"] = db.Transactions.Where(u => u.UserId == user.Id).Count();
             return RedirectToAction("Index", "Home");

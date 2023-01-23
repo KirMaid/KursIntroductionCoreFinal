@@ -1,0 +1,16 @@
+﻿@{
+    if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @ViewBag.Message
+        </div>
+     }
+}
+<form form asp-action="UpdateUser" asp-controller="PersonalPage">
+    <input type="hidden" value="@Model.Id" name="Id" />
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">ФИО</label>
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="@Model.Name" name="Name">
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
